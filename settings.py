@@ -4,8 +4,6 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
 )
 
-ABS_URL="http://localhost:8000/"
-
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -27,15 +25,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-MEDIA_ROOT = '/data/football/media/'
+MEDIA_ROOT = '/media/'
 MEDIA_URL = ''
 
-STATIC_ROOT = '/data/football/'
+STATIC_ROOT = ''
 
-STATIC_URL = 'localhost/'
+STATIC_URL = '/media/'
 
 STATICFILES_DIRS = (
-    '/media/'
+    '/media/',
 )
 
 STATICFILES_FINDERS = (
@@ -61,7 +59,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    "/data/football/templates/"
+    "/practice/football/templates/"
 )
 
 INSTALLED_APPS = (

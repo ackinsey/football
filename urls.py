@@ -13,5 +13,7 @@ urlpatterns = patterns('',
     
     url(r'^schedule/$', 'allstars.views.schedule'),
 
+    url(r'^set_roster/$', 'allstars.views.set_roster'),
+
     url(r'^admin/', include(admin.site.urls)),
 )

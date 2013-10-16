@@ -1,3 +1,35 @@
 {% include "header.html" %}
 
 <div>player detail</div>
+<div>{{player.name}}</div>
+<div>{{player.team}}</div>
+<div>{{player.is_active}}</div>
+<table border="1">
+	<tr>
+		<th>Week</th>
+		<th>Passing Yards</th>
+		<th>Passing Touchdowns</th>
+		<th>Rushing Yards</th>
+		<th>Rushing Touchdowns</th>
+		<th>Receiving Yards</th>
+		<th>Receiving Touchdowns</th>
+	</tr>
+{% for stat in statistics %}
+	<tr>
+	<td>{{ stat.week }}</td>
+	<td>{{ stat.passing_yards }}</td>
+	<td>{{ stat.passing_touchdowns }}</td>
+	<td>{{ stat.rushing_yards }}</td>
+	<td>{{ stat.rushing_touchdowns }}</td>
+	<td>{{ stat.receiving_yards }}</td>
+	<td>{{ stat.receiving_touchdowns }}</td>
+	</tr>
+{% endfor %}
+	<tr>
+	<td>Total</td>
+	{% for  total in total_statistics %}
+
+		<td>{{total}}</td>
+	{% endfor %}
+	</tr>
+</table>

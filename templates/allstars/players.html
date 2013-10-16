@@ -2,20 +2,43 @@
 
 
 	Players
-<table colwidth="2">
+<table border="1">
+<tr>
+	<th>
+		Name
+	</th>
+	<th>
+		Position
+	</th>
+	<th>
+		Passing Rating
+	</th>
+	<th>
+		Rushing Rating
+	</th>
+	<th>
+		Receiving Rating
+	</th>
+</tr>
+{% for player in players %}
 <tr>
 	<td>
-	
-	<!-- needs team, is_active, passing_abilities, rushing_ability, receiving ability
+		{{player.name}}
 	</td>
 	<td>
+		{{player.position}}
 	</td>
 	<td>
+		{{player.passing_ability}}
 	</td>
 	<td>
- -->
+		{{player.rushing_ability}}
+	</td>
+	<td>
+		{{player.receiving_ability}}
 	</td>
 </tr>
+{% endfor %}
 </table>
 
 <br>

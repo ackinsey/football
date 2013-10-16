@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models import Q
 import random
 
 class League(models.Model):
     name=models.CharField(max_length=30)
+    week=models.IntegerField()
 
     def __unicode__(self):
         return self.name
@@ -29,9 +30,19 @@ class Game(models.Model):
     def __unicode__(self):
         return u'%s vs %s ' %(self.team_1, self.team_2)
 
-    def generate_result():
-        pass
-        #insert whatever logic we're going to use to decide the results here.
+    def generate_result(self):
+        for player in Player.objects.filter(Q(team=self.team_1) | Q(team=self.team_2)).filter(is_active=True):
+            stat=Statistic(player=player,game=self,week=self.week)
+            rush_rating=((int(player.rushing_ability)+random.randint(1,50))/1.5) if int(player.rushing_ability) > 0 else 0
+            pass_rating=((int(player.passing_ability)+random.randint(1,50))/1.5) if int(player.passing_ability) > 0 else 0
+            catch_rating=((int(player.receiving_ability)+random.randint(1,50))/1.5) if int(player.receiving_ability) > 0 else 0
+            stat.rushing_yards=rush_rating*1.5
+            stat.rushing_touchdowns=rush_rating/30
+            stat.passing_yards=pass_rating*2.9
+            stat.passing_touchdowns =pass_rating/24
+            stat.receiving_yards=catch_rating*1.2
+            stat.receiving_touchdowns=catch_rating/35
+            stat.save()
 
 class Player(models.Model):
     team = models.ForeignKey(Team)
@@ -39,7 +50,7 @@ class Player(models.Model):
     #should be date field
     date_of_birth = models.CharField(max_length=20, null=True, blank=True)
     college = models.CharField(max_length=20, null=True, blank=True)
-    is_active = False
+    is_active = models.BooleanField(default=False)
     position = models.CharField(max_length=2,
                             choices=(
                                 ('QB', 'Quarterback'),
@@ -62,33 +73,32 @@ class Player(models.Model):
     def as_dict(self):
         return {'name':self.name}
 
-    #Probably not the most accurate random rating general, but it's a start
     def generate_ratings(self):
-        #Accounting for running quarterbacks. "Traditional" pocket passers will on
-        #average pass better, but they will rarely gain rushing points.
         if self.position=='QB':
-            if random.randint%4==0:
-                passing_ability=models.IntegerField(default=random.randint(50, 95))
-                rushing_ability=models.IntegerField(default=random.randint(25, 60))
+            if random.randint(100,199)%4==0:
+                self.passing_ability=random.randint(50, 90)
+                self.rushing_ability=random.randint(10, 40)
             else:
-                rushing_ability=models.IntegerField(default=random.randint(0,25))
-                passing_ability=models.IntegerField(default=random.randint(70, 99))
+                self.rushing_ability=random.randint(0,7)
+                self.passing_ability=default=random.randint(70, 99)
         elif self.position=='RB':
-            rushing_ability=models.IntegerField(default=random.randint(65, 99))
-            receiving_ability=models.IntegerField(default=random.randint(20, 45))
+            self.rushing_ability=random.randint(65, 99)
+            self.receiving_ability=random.randint(0, 15)
         elif self.position=='WR':
-            rushing_ability=models.IntegerField(default=random.randint(0,20))
-            receiving_ability=models.IntegerField(default=random.randint(70, 99))
+            self.receiving_ability=random.randint(70, 99)
         elif self.position=='TE':
-            receiving_ability=models.IntegerField(default=random.randint(50, 95))
+            self.receiving_ability=random.randint(50, 95)
     #missing rushing in this calculation
     def calculate_points():
         return (receiving_yards/10)+(passing_yards/25)+(receiving_touchdowns*6)+(passing_touchdowns*4)
 
 class Statistic(models.Model):
-    #receiving and rushing touchdowns/yards are worth the same so I'm lumping them into one attribute.
+    game = models.ForeignKey(Game)
     player = models.ForeignKey(Player)
+    week = models.IntegerField()
+    rushing_yards=models.IntegerField()
+    rushing_touchdowns=models.IntegerField()
     receiving_yards=models.IntegerField()
-    passing_yards=models.IntegerField()
     receiving_touchdowns=models.IntegerField()
+    passing_yards=models.IntegerField()
     passing_touchdowns=models.IntegerField()

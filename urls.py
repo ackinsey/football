@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     url(r'^player/(?P<player_name>[\S\w ]+)/$', 'allstars.views.player_detail'),
 
     url(r'^players/$', 'allstars.views.players'),
+
+    url(r'^filter_players/$', 'allstars.views.filter_players'),
     
     url(r'^schedule/$', 'allstars.views.schedule'),
 

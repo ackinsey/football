@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
-
+from django.utils import simplejson
 from allstars.models import Player, Team, Game, League, Statistic
 from allstars.forms import RosterForm
+from django.core import serializers
 
 def home(request):
     return render(request, 'allstars/home.html', {
@@ -31,13 +32,15 @@ def player_detail(request, player_name):
 
 def players(request):
 	p = Player.objects.all()
-	#for pi in p:
-		#pi.is_active=False
-		#pi.generate_ratings()
-		#pi.save()
 	return render(request, 'allstars/players.html', {
 		'players':p,
 	})
+
+def filter_players(request):
+	if 'selection' in request.POST:
+		response = HttpResponse(content_type="application/json")
+		serializers.serialize("json", Player.objects.filter(position=request.POST['selection']), stream=response)
+		return response
 
 def schedule(request):
 	g=None

@@ -8,6 +8,7 @@ from django.utils import simplejson
 
 from allstars.models import Player, Team, Game, League, Statistic
 from allstars.forms import RosterForm, RegisterForm
+from django.core import serializers
 
 def home(request):
     return render(request, 'allstars/home.html', {
@@ -34,9 +35,6 @@ def player_detail(request, player_name):
 def players(request):
 	p = Player.objects.all()
 
-	if request.method == u'GET':
-		print "y"
-
 	return render(request, 'allstars/players.html', {
 		'players':p,
 	})
@@ -55,6 +53,11 @@ def create(request):
         'form': form,
     },RequestContext(request))
 
+def filter_players(request):
+	if 'selection' in request.POST:
+		response = HttpResponse(content_type="application/json")
+		serializers.serialize("json", Player.objects.filter(position=request.POST['selection']), stream=response)
+		return response
 
 def schedule(request):
 	g=None

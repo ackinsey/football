@@ -1,8 +1,20 @@
 {% include "header.html" %}
 
-
+<div id="form_container">
+	<form method='post' id ='test'>
+		{% csrf_token %}
+	    <select id="pos_filter">
+	    	<option>----</option>
+	    	<option>QB</option>
+	    	<option>RB</option>
+	    	<option>WR</option>
+	    	<option>TE</option>
+	    </select>
+	    <input type='submit' value='Filter'/>
+	</form>
+</div>
 	Players
-<table border="1">
+<table border="1" id="players_table">
 <tr>
 	<th>
 		Name
@@ -23,7 +35,9 @@
 {% for player in players %}
 <tr>
 	<td>
-		{{player.name}}
+		<a href="/player/{{player.name}}" target="_blank">
+			{{player.name}}
+		</a>
 	</td>
 	<td>
 		{{player.position}}
@@ -43,3 +57,33 @@
 
 <br>
 <br>
+<script type="text/javascript">
+   $(document).ready(function() {
+       $("#test").submit(function(event){
+       if($('#pos_filter').val()=='----')
+       		return;
+       event.preventDefault();
+            $.ajax({
+					url:"/filter_players/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					selection : $('#pos_filter').val(),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(players) {
+					$('#players_table').html("");
+					$('#players_table').append("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");
+					for(var i=0;i<players.length;i++)
+						$('#players_table').append("<tr><td><a href=\"/player/"+players[i].fields.name+"\" target=\"_blank\">"+players[i].fields.name+"</a></td><td>"+
+														players[i].fields.position+"</td><td>"+
+														players[i].fields.passing_ability+"</td><td>"+
+														players[i].fields.rushing_ability+"</td><td>"+
+														players[i].fields.receiving_ability+
+														"</td></tr>");
+				}
+			});
+       });
+
+    });
+</script>

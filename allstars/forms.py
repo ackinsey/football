@@ -1,9 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from allstars.models import Player, Team
+
+from allstars.models import Player, Team, League
 
 class RosterForm(forms.Form):
-    players = forms.ModelMultipleChoiceField(
+    players=forms.ModelMultipleChoiceField(
         queryset=Player.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False
@@ -30,4 +31,23 @@ class RosterForm(forms.Form):
 			raise ValidationError('ERROR: You must select 1 QB, at least 1 RB, at least 3 WR, and at least one TE.')		
 		if len(active_roster) != 7:
 			raise ValidationError('ERROR: You must select exactly 7 players!')		
-		
+	
+class RegisterForm(forms.Form):
+	team_name=forms.CharField(max_length=30)
+	password=forms.CharField(max_length=30)
+	password_retype=forms.CharField(max_length=30)
+	email_address=forms.EmailField()
+
+	players=forms.ModelMultipleChoiceField(
+		queryset=League.objects.all(),
+		widget=forms.CheckboxSelectMultiple,
+		required=True
+		)
+
+	def clean_form(self):
+		if Team.objects.filter(team_name=self.team_name):
+			raise ValidationError('ERROR: That team name exists')
+			if Team.objects.filter(email_address=self.email_address):
+				raise ValidationError('ERROR: That email address is taken')
+				if self.password != self.passwordretype:
+					raise ValidationError('ERROR: Your two passwords don\'t match')

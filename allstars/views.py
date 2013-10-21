@@ -1,43 +1,60 @@
 from django.db.models import Q, Sum
 from django.shortcuts import render, render_to_response, HttpResponseRedirect
 from django.http import Http404, HttpResponse
-from django.contrib.auth.models import User
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
+from django.utils import simplejson
 
 from allstars.models import Player, Team, Game, League, Statistic
-from allstars.forms import RosterForm
+from allstars.forms import RosterForm, RegisterForm
 
 def home(request):
     return render(request, 'allstars/home.html', {
     })
 
 def player_detail(request, player_name):
-	p = Player.objects.get(name=player_name)
-	s = Statistic.objects.filter(player=p).order_by('week')
+	try:
+		p = Player.objects.get(name=player_name)
+	except:
+		raise Http404
+
+	stats = Statistic.objects.filter(player=p).order_by('week')
 	totals=[]
-	totals.append(s.aggregate(Sum('passing_yards')).get('passing_yards__sum'))
-	totals.append(s.aggregate(Sum('passing_touchdowns')).get('passing_touchdowns__sum'))
-	totals.append(s.aggregate(Sum('rushing_yards')).get('rushing_yards__sum'))
-	totals.append(s.aggregate(Sum('rushing_touchdowns')).get('rushing_touchdowns__sum'))
-	totals.append(s.aggregate(Sum('receiving_yards')).get('receiving_yards__sum'))
-	totals.append(s.aggregate(Sum('receiving_touchdowns')).get('receiving_touchdowns__sum'))
+
+	for field in Statistic._meta.fields[4:]:
+		totals.append(stats.aggregate(Sum(field.name)).get('%s__sum' %field.name))
+	
 	return render(request, 'allstars/player_detail.html', {
 		'player':p,
-		'statistics':s,
+		'statistics':stats,
 		'total_statistics':totals
 		})
 
 def players(request):
 	p = Player.objects.all()
-	#for pi in p:
-		#pi.is_active=False
-		#pi.generate_ratings()
-		#pi.save()
+
+	if request.method == u'GET':
+		print "y"
+
 	return render(request, 'allstars/players.html', {
 		'players':p,
 	})
+
+def create(request):
+	form = None
+
+	if request.method == 'POST':
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			team=Team.objects.create_user(team_name=form.team_name, email_address=form.email_address, password=form.password)
+			return HttpResponseRedirect('/')
+	else:
+		form = RegisterForm()
+	return render_to_response('forms/create.html', {
+        'form': form,
+    },RequestContext(request))
+
 
 def schedule(request):
 	g=None
@@ -46,6 +63,7 @@ def schedule(request):
 	return render(request, 'allstars/schedule.html', {
 		'games':g
 	})
+
 @csrf_protect
 def set_roster(request):
 	p = Player.objects.filter(team=Team.objects.filter(user=request.user)[0])
@@ -59,7 +77,7 @@ def set_roster(request):
 			return HttpResponseRedirect('/')
 	else:
 		form = RosterForm()
-	return render_to_response('allstars/set_roster.html', {
+	return render_to_response('forms/set_roster.html', {
         'form': form,
     },RequestContext(request))
 

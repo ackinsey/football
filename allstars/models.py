@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db.models import Q
 import random
 
@@ -10,15 +10,21 @@ class League(models.Model):
     def __unicode__(self):
         return self.name
 
-class Team(models.Model):
-    user = models.ForeignKey(User)
+class Team(AbstractBaseUser):
+    team_name=models.CharField(max_length=30, unique=True)
+    email_address=models.EmailField()
+
     league = models.ForeignKey(League)
-    name=models.CharField(max_length=30)
     wins=models.IntegerField(default=0)
     loss=models.IntegerField(default=0)
 
+    USERNAME_FIELD='team_name'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
     def __unicode__(self):
-        return self.name
+        return self.team_name
 
 class Game(models.Model):
     team_1 = models.ForeignKey(Team, related_name="team_1")

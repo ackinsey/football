@@ -59,7 +59,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    "/practice/football/templates/"
+    "/data/football/templates/"
 )
 
 INSTALLED_APPS = (
@@ -70,7 +70,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
     'allstars',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+AUTH_USER_MODEL = 'allstars.Team'

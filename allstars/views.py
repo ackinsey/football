@@ -13,6 +13,32 @@ from django.core import serializers
 def home(request):
     return render(request, 'allstars/home.html', {
     })
+draft_dict={}
+draft_log=[]
+def draft(request):
+	draft_dict=Team.objects.filter(league=1)
+	p = Player.objects.filter(team__isnull=True)
+	drafted_p = Player.objects.filter(team=4)
+	return render(request, 'allstars/draft.html', {
+		'draft_dict':draft_dict,
+		'players':p,
+		'drafted_players':drafted_p
+	})
+
+def draft_player(request):
+	if 'selection' in request.POST:
+
+		selected_player=Player.objects.get(name=request.POST['selection'])
+		selected_player.team=Team.objects.get(team_name="Cowboys")
+		selected_player.save()
+
+		draft_log.append("The "+selected_player.team.team_name+" draft "+selected_player.name)
+
+		undrafted=serializers.serialize('python', Player.objects.filter(team=None))
+		team=serializers.serialize('python', Player.objects.filter(team=4))
+
+		json = simplejson.dumps([undrafted,team])
+		return HttpResponse(json, mimetype='text/json')
 
 def player_detail(request, player_name):
 	try:
@@ -69,7 +95,7 @@ def schedule(request):
 
 @csrf_protect
 def set_roster(request):
-	p = Player.objects.filter(team=Team.objects.filter(user=request.user)[0])
+	p = Player.objects.filter(team=Team.objects.filter(team_name=request.user)[0])
 	form = None
 	#for pi in p:
 	#	pi.is_active=False

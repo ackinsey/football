@@ -1,0 +1,141 @@
+{% include "header.html" %}
+<table border="1" id="players_table" style="display: inline-block;"`>
+<tr>
+	<th>
+		Name
+	</th>
+	<th>
+		Position
+	</th>
+	<th>
+		Passing Rating
+	</th>
+	<th>
+		Rushing Rating
+	</th>
+	<th>
+		Receiving Rating
+	</th>
+</tr>
+{% for player in players %}
+<tr class="player_row">
+	<td>
+		<a href="/player/{{player.name}}" target="_blank">
+			{{player.name}}
+		</a>
+	</td>
+	<td>
+		{{player.position}}
+	</td>
+	<td>
+		{{player.passing_ability}}
+	</td>
+	<td>
+		{{player.rushing_ability}}
+	</td>
+	<td>
+		{{player.receiving_ability}}
+	</td>
+</tr>
+{% endfor %}
+</table>
+<table border="1" id="team_table" style="display: inline-block;">
+<tr>
+	<th>
+		Name
+	</th>
+	<th>
+		Position
+	</th>
+	<th>
+		Passing Rating
+	</th>
+	<th>
+		Rushing Rating
+	</th>
+	<th>
+		Receiving Rating
+	</th>
+</tr>
+{% for player in drafted_players %}
+<tr>
+	<td>
+		<a href="/player/{{player.name}}" target="_blank">
+			{{player.name}}
+		</a>
+	</td>
+	<td>
+		{{player.position}}
+	</td>
+	<td>
+		{{player.passing_ability}}
+	</td>
+	<td>
+		{{player.rushing_ability}}
+	</td>
+	<td>
+		{{player.receiving_ability}}
+	</td>
+</tr>
+{% endfor %}
+</table>
+<br/>
+{{draft_dict}}
+<div id="draft_log"></div>
+<script type="text/javascript">
+	function draft(){
+		event.preventDefault();
+			var player_n=$.trim($(this).find('a').text());
+            $.ajax({
+					url:"/draft_player/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					selection : $.trim($(this).find('a').text()),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(player_sets) {
+					$('#draft_log').append("<div>The "+"Cowboys draft "+player_n+"</div>");
+					var players=player_sets[0];
+					$('#players_table').html("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");
+					for(var i=0;i<players.length;i++){
+						$('#players_table').append("<tr class=\"player_row\"><td><a href=\"/player/"+players[i].fields.name+"\" target=\"_blank\">"+players[i].fields.name+"</a></td><td>"+
+														players[i].fields.position+"</td><td>"+
+														players[i].fields.passing_ability+"</td><td>"+
+														players[i].fields.rushing_ability+"</td><td>"+
+														players[i].fields.receiving_ability+
+														"</td></tr>");
+					}
+					players=player_sets[1];
+					$('#team_table').html("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");
+					for(var i=0;i<players.length;i++){
+						$('#team_table').append("<tr><td><a href=\"/player/"+players[i].fields.name+"\" target=\"_blank\">"+players[i].fields.name+"</a></td><td>"+
+														players[i].fields.position+"</td><td>"+
+														players[i].fields.passing_ability+"</td><td>"+
+														players[i].fields.rushing_ability+"</td><td>"+
+														players[i].fields.receiving_ability+
+														"</td></tr>");
+					}
+					$('.player_row').on('click',draft);
+					
+					$('.player_row').on('mouseenter',function(){
+						this.style.background="red";
+					});
+					$('.player_row').on('mouseleave',function(){
+						this.style.background="white";
+					});
+
+				}
+			});
+
+	}
+	$(document).ready(function() {
+		$('.player_row').on('mouseenter',function(){
+			this.style.background="red";
+		});
+		$('.player_row').on('mouseleave',function(){
+			this.style.background="white";
+		});
+		$('.player_row').on('click',draft);
+	});
+</script>

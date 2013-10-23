@@ -21,5 +21,9 @@ urlpatterns = patterns('',
 
     url(r'^create/$', 'allstars.views.create'),
 
+    url(r'^draft/$', 'allstars.views.draft'),
+
+    url(r'^draft_player/$', 'allstars.views.draft_player'),
+
     url(r'^admin/', include(admin.site.urls)),
 )

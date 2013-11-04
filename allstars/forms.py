@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth.models import User
 from allstars.models import Player, Team, League
 
 class RosterForm(forms.Form):
@@ -33,21 +33,16 @@ class RosterForm(forms.Form):
 			raise ValidationError('ERROR: You must select exactly 7 players!')		
 	
 class RegisterForm(forms.Form):
+	username=forms.CharField(max_length=30)
 	team_name=forms.CharField(max_length=30)
-	password=forms.CharField(max_length=30)
-	password_retype=forms.CharField(max_length=30)
+	password=forms.CharField(widget=forms.PasswordInput())
+	password_retype=forms.CharField(widget=forms.PasswordInput())
 	email_address=forms.EmailField()
 
-	players=forms.ModelMultipleChoiceField(
-		queryset=League.objects.all(),
-		widget=forms.CheckboxSelectMultiple,
-		required=True
-		)
-
-	def clean_form(self):
-		if Team.objects.filter(team_name=self.team_name):
-			raise ValidationError('ERROR: That team name exists')
-			if Team.objects.filter(email_address=self.email_address):
+	def clean_username(self):
+		if User.objects.filter(username=self.cleaned_data['username']):
+			raise ValidationError('ERROR: That username exists')
+			if User.objects.filter(email=self.cleaned_data['email_address']):
 				raise ValidationError('ERROR: That email address is taken')
-				if self.password != self.passwordretype:
+				if self.cleaned_data['password'] != self.cleaned_data['password_retype']:
 					raise ValidationError('ERROR: Your two passwords don\'t match')

@@ -1,8 +1,77 @@
+{% include "header.html" %}
 <form method="post">
 	{% csrf_token %}
 	{% for field in form %}
 		{{field.errors}}
-		{{field}}<br/>
+		{{field.name}} {{field}}<br/>
+		<div id="{{field.name}}_error" style="color:red;"></div>
+		<div id="{{field.name}}_confirm" style="color:green;"></div>
 	{% endfor %}
 	<input type="submit" value="Submit" />
 </form>
+<script type="text/javascript">
+
+function checkUsername(){
+			event.preventDefault();
+            $.ajax({
+					url:"/validate_user/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					username: $('#id_username').val(),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(data) {
+						$('#username_error').text(data.user_error);
+						$('#username_confirm').text(data.user_confirm);
+				}
+			});
+	}
+
+function checkPassword(){
+			event.preventDefault();
+            $.ajax({
+					url:"/validate_user/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					password: $('#id_password').val(),
+					password_retype: $('#id_password_retype').val(),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(data) {
+						$('#password_retype_error').text(data.password_error);
+						$('#password_retype_confirm').text(data.password_confirm);
+				}
+			});
+	}
+
+function checkTeamName(){
+			event.preventDefault();
+            $.ajax({
+					url:"/validate_user/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					team_name: $('#id_team_name').val(),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(data) {
+						$('#team_name_error').text(data.team_error);
+						$('#team_name_confirm').text(data.team_confirm);
+				}
+			});
+	}
+
+$(document).ready(function() {
+	$('#id_username').change(function(){
+		checkUsername();
+	});
+	$('#id_password_retype').change(function(){
+		checkPassword();
+	});
+	$('#id_team_name').change(function(){
+		checkTeamName();
+	});
+});
+</script>

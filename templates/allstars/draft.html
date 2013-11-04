@@ -1,4 +1,5 @@
 {% include "header.html" %}
+<div>{{usr}}'s team</div>
 <table border="1" id="players_table" style="display: inline-block;"`>
 <tr>
 	<th>
@@ -80,22 +81,11 @@
 {% endfor %}
 </table>
 <br/>
-{{draft_dict}}
+<div id="draft_data"></div>
+<br/>
 <div id="draft_log"></div>
 <script type="text/javascript">
-	function draft(){
-		event.preventDefault();
-			var player_n=$.trim($(this).find('a').text());
-            $.ajax({
-					url:"/draft_player/",
-					type : "POST",
-					dataType: "json",
-					data : {
-					selection : $.trim($(this).find('a').text()),
-					csrfmiddlewaretoken: '{{ csrf_token }}'
-				},
-				success : function(player_sets) {
-					$('#draft_log').append("<div>The "+"Cowboys draft "+player_n+"</div>");
+	function reloadContent(player_sets){
 					var players=player_sets[0];
 					$('#players_table').html("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");
 					for(var i=0;i<players.length;i++){
@@ -124,7 +114,41 @@
 					$('.player_row').on('mouseleave',function(){
 						this.style.background="white";
 					});
+	}
+	function draft(){
+		event.preventDefault();
+			var player_n=$.trim($(this).find('a').text());
+            $.ajax({
+					url:"/draft_player/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					selection : $.trim($(this).find('a').text()),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(player_sets) {
+					reloadContent(player_sets);
+				}
+			});
 
+	}
+	function updateData(){
+		//event.preventDefault();
+			//var player_n=$.trim($(this).find('a').text());
+            $.ajax({
+					url:"/draft_player/",
+					type : "POST",
+					dataType: "json",
+					data : {
+					//selection : $.trim($(this).find('a').text()),
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(data) {
+					$('#draft_data').text("The "+data[2][0].fields.team_name+" are currently drafting.");
+					$('#draft_log').text("");
+					for(var i=data[3].length-1;i>=0;i--)
+						$('#draft_log').append("<div>"+data[3][i]+"</div>");
+					reloadContent(data)
 				}
 			});
 
@@ -137,5 +161,7 @@
 			this.style.background="white";
 		});
 		$('.player_row').on('click',draft);
+
+		setInterval(function(){updateData()}, 5000);
 	});
 </script>

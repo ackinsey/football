@@ -1,30 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db.models import Q
+from django.contrib.auth.models import User
 import random
 
 class League(models.Model):
     name=models.CharField(max_length=30)
     week=models.IntegerField()
-
+    draft_index=models.IntegerField(default=0)
+    
     def __unicode__(self):
-        return self.name
+        return u'%s' %(self.name)
 
-class Team(AbstractBaseUser):
+class Team(models.Model):
     team_name=models.CharField(max_length=30, unique=True)
-    email_address=models.EmailField()
-
+    user = models.ForeignKey(User)
     league = models.ForeignKey(League)
     wins=models.IntegerField(default=0)
     loss=models.IntegerField(default=0)
 
-    USERNAME_FIELD='team_name'
-    REQUIRED_FIELDS = []
-
-    objects = UserManager()
+   # def __init__(self, team_name,user):
+   #     self.team_name=team_name
+   #     self.league=League.objects.all()[0]
 
     def __unicode__(self):
-        return self.team_name
+        return u'%s' %(self.team_name)
 
 class Game(models.Model):
     team_1 = models.ForeignKey(Team, related_name="team_1")
@@ -51,7 +51,7 @@ class Game(models.Model):
             stat.save()
 
 class Player(models.Model):
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey(Team,default=None, null=True, blank=True)
     name = models.CharField(max_length=40)
     #should be date field
     date_of_birth = models.CharField(max_length=20, null=True, blank=True)

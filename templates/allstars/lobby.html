@@ -1,0 +1,13 @@
+{% include "header.html" %}
+
+<script type="text/javascript">
+jQuery(window).bind('beforeunload', function(){
+    $.ajax({
+		url:"/lobbyexit/",
+		async:false,
+	success : function() {
+		alert('yes');
+	}
+	});
+});
+</script>

@@ -9,19 +9,96 @@ from django.contrib.auth.models import User
 from allstars.models import Player, Team, Game, League, Statistic
 from allstars.forms import RosterForm, RegisterForm
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+
 
 def home(request):
+	#Just rendering a template for the home page.
     return render(request, 'allstars/home.html', {
     })
+
+def leagues(request):
+	l = League.objects.all()
+
+	t = Team.objects.filter(league=l)
+
+	return render(request, 'allstars/leagues.html', {
+		'leagues':l,
+		'teams': t,	
+	})
+
+def team_detail(request, team_name):
+	try:
+		t = Team.objects.get(team_name=team_name)
+	except:
+		raise Http404
+
+	players = Player.objects.filter(team=t)
+	
+	return render(request, 'allstars/team_detail.html', {
+		'players':players,
+		'team': t,
+		})
+
+def players(request):
+	p = Player.objects.all()
+
+	return render(request, 'allstars/players.html', {
+		'players':p,
+	})
+
+def player_detail(request, player_name):
+	try:
+		p = Player.objects.get(name=player_name)
+	except:
+		raise Http404
+
+	stats = Statistic.objects.filter(player=p).order_by('week')
+	totals=[]
+
+	for field in Statistic._meta.fields[4:]:
+		totals.append(stats.aggregate(Sum(field.name)).get('%s__sum' %field.name))
+	
+	return render(request, 'allstars/player_detail.html', {
+		'player':p,
+		'statistics':stats,
+		'total_statistics':totals
+		})
+
+
+def filter_players(request):
+	if 'selection' in request.POST:
+		response = HttpResponse(content_type="application/json")
+		serializers.serialize("json", Player.objects.filter(position=request.POST['selection']), stream=response)
+		return response
+
+@csrf_protect
+def set_roster(request):
+	p = Player.objects.filter(team=Team.objects.filter(team_name=request.user)[0])
+	form = None
+	#for pi in p:
+	#	pi.is_active=False
+	#	pi.save()
+	if request.method == 'POST':
+		form = RosterForm(request.POST)
+		if form.is_valid():
+			return HttpResponseRedirect('/')
+	else:
+		form = RosterForm()
+	return render_to_response('forms/set_roster.html', {
+        'form': form,
+    },RequestContext(request))
+
+
 draft_dict={}
 draft_log=[]
+
+@login_required
 def draft(request):
-	#for player in Player.objects.all():
-		#player.team=None
-		#player.save()
-	#lge=League.objects.all()[0]
-	#lge.draft_index=0
-	#lge.save()
+	if request.user.is_anonymous():
+		return HttpResponseRedirect('/login')
+
 	p = Player.objects.filter(team__isnull=True)
 	drafted_p = Player.objects.filter(team=Team.objects.filter(user=request.user))
 	return render(request, 'allstars/draft.html', {
@@ -61,54 +138,6 @@ def draft_player(request):
 		current=serializers.serialize('python', [Team.objects.filter(league=League.objects.all()[0])[League.objects.all()[0].draft_index]])
 		json = simplejson.dumps([undrafted,team,current,draft_log])
 		return HttpResponse(json, mimetype='text/json')
-
-def player_detail(request, player_name):
-	try:
-		p = Player.objects.get(name=player_name)
-	except:
-		raise Http404
-
-	stats = Statistic.objects.filter(player=p).order_by('week')
-	totals=[]
-
-	for field in Statistic._meta.fields[4:]:
-		totals.append(stats.aggregate(Sum(field.name)).get('%s__sum' %field.name))
-	
-	return render(request, 'allstars/player_detail.html', {
-		'player':p,
-		'statistics':stats,
-		'total_statistics':totals
-		})
-
-def team_detail(request, team_name):
-	try:
-		t = Team.objects.get(team_name=team_name)
-	except:
-		raise Http404
-
-	players = Player.objects.filter(team=t)
-	
-	return render(request, 'allstars/team_detail.html', {
-		'players':players,
-		'team': t,
-		})
-
-def players(request):
-	p = Player.objects.all()
-
-	return render(request, 'allstars/players.html', {
-		'players':p,
-	})
-
-def leagues(request):
-	l = League.objects.all()
-
-	t = Team.objects.filter(league=l)
-
-	return render(request, 'allstars/leagues.html', {
-		'leagues':l,
-		'teams': t,	
-	})
 
 def create(request):
 	form = None
@@ -193,40 +222,30 @@ def validate_user(request):
 		}))
 
 
-def filter_players(request):
-	if 'selection' in request.POST:
-		response = HttpResponse(content_type="application/json")
-		serializers.serialize("json", Player.objects.filter(position=request.POST['selection']), stream=response)
-		return response
-
-def schedule(request):
-	g=None
-	if request.user.is_authenticated():
-		g=Game.objects.filter(Q(team_1 = Team.objects.filter(user=request.user)) | Q(team_2 = Team.objects.filter(user=request.user))).order_by('week')
-	return render(request, 'allstars/schedule.html', {
-		'games':g
-	})
-
-@csrf_protect
-def set_roster(request):
-	p = Player.objects.filter(team=Team.objects.filter(team_name=request.user)[0])
-	form = None
-	#for pi in p:
-	#	pi.is_active=False
-	#	pi.save()
-	if request.method == 'POST':
-		form = RosterForm(request.POST)
-		if form.is_valid():
-			return HttpResponseRedirect('/')
-	else:
-		form = RosterForm()
-	return render_to_response('forms/set_roster.html', {
-        'form': form,
-    },RequestContext(request))
-
-def play_game(request):
+def play_game(request, team_name1, team_name2):
 	g = Game.objects.get(week=League.objects.get().week)
 	g.generate_result()
 	return render(request, 'allstars/play_game.html', {
 		'game': g,
+	})
+
+@login_required
+def lobby(request):
+
+	t = Team.objects.get(user=request.user)
+
+	t.play_ready = True
+	t.save()
+
+	print t.play_ready
+	return render(request, 'allstars/lobby.html', {
+	})
+
+def lobbyexit(request):
+	t = Team.objects.get(user=request.user)
+
+	t.play_ready = False
+	t.save()
+	
+	return render(request, 'allstars/lobby.html', {
 	})

@@ -1,7 +1,7 @@
 {% include "header.html" %}
 
 {% for league in leagues %}
-	<a href="/league/{{league.name}}">{{league.name}}</a>
+	{{league.name}}
 	<table border="1" id="players_table">
 	{% for team in teams %}
 	<tr>
@@ -10,5 +10,5 @@
 		</td>
 	</tr>
 	{% endfor %}
-</table>
+	</table>
 {% endfor %}

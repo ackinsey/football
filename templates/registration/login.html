@@ -1,0 +1,17 @@
+{% include "header.html" %}
+
+
+<div class="gen_form">
+	<h1>Login</h1>
+	<div class="gen_form_gutter">
+        <form method="post">
+        	{% csrf_token %}
+			<table>		
+			       {{form.as_table}}
+			</table>
+			<div>
+				<input class="gen_form_button" type="submit" value="login" />
+			</div>
+		</form>
+	</div>
+</div>

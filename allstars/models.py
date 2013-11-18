@@ -3,6 +3,7 @@ from django.contrib.auth.models import UserManager
 from django.db.models import Q
 from django.contrib.auth.models import User
 import random
+from datetime import datetime
 
 class League(models.Model):
     name=models.CharField(max_length=30)
@@ -18,10 +19,7 @@ class Team(models.Model):
     league = models.ForeignKey(League)
     wins=models.IntegerField(default=0)
     loss=models.IntegerField(default=0)
-
-   # def __init__(self, team_name,user):
-   #     self.team_name=team_name
-   #     self.league=League.objects.all()[0]
+    play_ready = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s' %(self.team_name)

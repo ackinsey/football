@@ -29,6 +29,7 @@ def draft(request):
 		'players':p,
 		'drafted_players':drafted_p,
 		'usr':request.user,
+		'home':True
 	})
 
 def draft_player(request):
@@ -79,11 +80,34 @@ def player_detail(request, player_name):
 		'total_statistics':totals
 		})
 
+def team_detail(request, team_name):
+	try:
+		t = Team.objects.get(team_name=team_name)
+	except:
+		raise Http404
+
+	players = Player.objects.filter(team=t)
+	
+	return render(request, 'allstars/team_detail.html', {
+		'players':players,
+		'team': t,
+		})
+
 def players(request):
 	p = Player.objects.all()
 
 	return render(request, 'allstars/players.html', {
 		'players':p,
+	})
+
+def leagues(request):
+	l = League.objects.all()
+
+	t = Team.objects.filter(league=l)
+
+	return render(request, 'allstars/leagues.html', {
+		'leagues':l,
+		'teams': t,	
 	})
 
 def create(request):

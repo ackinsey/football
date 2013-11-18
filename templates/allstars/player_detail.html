@@ -1,9 +1,7 @@
 {% include "header.html" %}
 
-<div>player detail</div>
 <div>{{player.name}}</div>
-<div>{{player.team}}</div>
-<div>{{player.is_active}}</div>
+<div><a href="/team/{{player.team.team_name}}">{{player.team}}</a></div>
 <table border="1">
 	<tr>
 		<th>Week</th>

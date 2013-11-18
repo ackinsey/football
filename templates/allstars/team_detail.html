@@ -1,0 +1,23 @@
+{% include "header.html" %}
+
+{{team.team_name}}
+<table border="1" id="players_table">
+<tr>
+	<th>
+		Name
+	</th>
+	<th>
+		Position
+	</th>
+</tr>
+{% for player in players %}
+<tr>
+	<td>
+		<a href="/player/{{player.name}}">{{player.name}}</a>
+	</td>
+	<td>
+		{{player.position}}
+	</td>
+</tr>
+{% endfor %}
+</table>

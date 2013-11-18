@@ -1,5 +1,29 @@
-<script type="text/javascript" src="http://localhost/js/jquery.js"></script>
+<!DOCTYPE html>
+<head>
+{% block title %}<title>Fantasy Football</title>{% endblock %}
 
-{% block header %}
-<header>header</header>{{settings.static_url}}
-{% endblock %}
+<!-- Bootstrap core CSS -->
+<link href="http://localhost/css/bootstrap.css" rel="stylesheet">
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Fantasy Football</a>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Home</a></li>
+        <li><a href="/players">Players</a></li>
+        <li><a href="/league">Leagues</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://localhost/js/bootstrap.min.js"></script>
+</head>
+
+<br/>
+<br/><br/>
+<br/>

@@ -14,7 +14,7 @@
 	</form>
 </div>
 	Players
-<table border="1" id="players_table">
+<table id="players_table">
 <tr>
 	<th>
 		Name
@@ -63,6 +63,7 @@
        if($('#pos_filter').val()=='----')
        		return;
        event.preventDefault();
+
             $.ajax({
 					url:"/filter_players/",
 					type : "POST",
@@ -72,7 +73,8 @@
 					csrfmiddlewaretoken: '{{ csrf_token }}'
 				},
 				success : function(players) {
-					$('#players_table').html("");
+					$('#players_table').html(" ");
+
 					$('#players_table').append("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");
 					for(var i=0;i<players.length;i++)
 						$('#players_table').append("<tr><td><a href=\"/player/"+players[i].fields.name+"\" target=\"_blank\">"+players[i].fields.name+"</a></td><td>"+

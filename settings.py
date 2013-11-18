@@ -77,4 +77,4 @@ INSTALLED_APPS = (
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
-AUTH_USER_MODEL = 'allstars.Team'
+

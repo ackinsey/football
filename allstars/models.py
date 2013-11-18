@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, UserManager
+from django.contrib.auth.models import UserManager
 from django.db.models import Q
 from django.contrib.auth.models import User
 import random

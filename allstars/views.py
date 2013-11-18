@@ -12,7 +12,6 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 
-
 def home(request):
 	#Just rendering a template for the home page.
     return render(request, 'allstars/home.html', {
@@ -231,21 +230,38 @@ def play_game(request, team_name1, team_name2):
 
 @login_required
 def lobby(request):
-
 	t = Team.objects.get(user=request.user)
 
 	t.play_ready = True
 	t.save()
 
-	print t.play_ready
+	teams = Team.objects.filter(play_ready = True)
+	hosts = Team.objects.filter(hosting_game = True)
+
 	return render(request, 'allstars/lobby.html', {
+		'teams':teams,
+		'hosts':hosts,
 	})
+
+def lobbyupdate(request):
+	if "hosting" in request.POST:
+		t = Team.objects.get(user=request.user)
+
+		t.hosting_game = True
+		t.play_ready = False
+		t.save()
+
+	teams=serializers.serialize('python', Team.objects.filter(play_ready=True))
+	hosts=serializers.serialize('python', Team.objects.filter(hosting_game=True))
+	json = simplejson.dumps([teams,hosts])
+	return HttpResponse(json, mimetype='text/json')
 
 def lobbyexit(request):
 	t = Team.objects.get(user=request.user)
 
 	t.play_ready = False
+	t.hosting_game = False
 	t.save()
-	
+
 	return render(request, 'allstars/lobby.html', {
 	})

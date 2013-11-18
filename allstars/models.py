@@ -20,6 +20,7 @@ class Team(models.Model):
     wins=models.IntegerField(default=0)
     loss=models.IntegerField(default=0)
     play_ready = models.BooleanField(default=False)
+    hosting_game = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s' %(self.team_name)

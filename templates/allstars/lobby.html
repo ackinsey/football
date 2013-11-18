@@ -1,13 +1,80 @@
 {% include "header.html" %}
 
+<div id="teams">
+	{% for team in teams %}
+		{{team.team_name}}
+	{% endfor %}
+</div>
+
+<br/>
+<br/>
+
+<button type="button" onclick="hostGame();">Host Game</button>
+
+<br/>
+<br/>
+
+<div id="games">
+	{% for host in hosts %}
+		{{host.team_name}}
+	{% endfor %}
+</div>
+
 <script type="text/javascript">
+
+function hostGame(){
+	$.ajax({
+		url:"/lobbyupdate/",
+		type : "POST",
+		dataType: "json",
+		data : {
+			hosting: true,
+			csrfmiddlewaretoken: '{{ csrf_token }}',
+		},
+		success : function(data) {
+			$('#teams').html(" ");
+			var teams = data[0];
+			for(var i=0;i<teams.length;i++)
+					$('#teams').append(teams[i].fields.team_name + " ");
+
+			$('#games').html(" ");
+			var hosts = data[1];
+			for(var i=0;i<hosts.length;i++)
+					$('#games').append(hosts[i].fields.team_name + " ");
+		}
+	});
+}
+
+function updateLobby(){
+	$.ajax({
+		url:"/lobbyupdate/",
+		type : "POST",
+		dataType: "json",
+		data : {
+			csrfmiddlewaretoken: '{{ csrf_token }}',
+		},
+		success : function(data) {
+			$('#teams').html(" ");
+			var teams = data[0];
+			for(var i=0;i<teams.length;i++)
+					$('#teams').append(teams[i].fields.team_name + " ");
+
+			$('#games').html(" ");
+			var hosts = data[1];
+			for(var i=0;i<hosts.length;i++)
+					$('#games').append(hosts[i].fields.team_name + " ");
+		}
+	});
+
+    setTimeout(updateLobby, 5000);
+}
+
+updateLobby();
+
 jQuery(window).bind('beforeunload', function(){
     $.ajax({
 		url:"/lobbyexit/",
 		async:false,
-	success : function() {
-		alert('yes');
-	}
 	});
 });
 </script>

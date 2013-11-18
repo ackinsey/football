@@ -31,6 +31,9 @@ urlpatterns = patterns('',
     url(r'^lobby/$', 'allstars.views.lobby'),
     #going into the lobby
 
+    url(r'^lobbyupdate/$', 'allstars.views.lobbyupdate'),
+    #ajax for updating lobby
+
     url(r'^lobbyexit/$', 'allstars.views.lobbyexit'),
     #ajax view for exiting the lobby
 

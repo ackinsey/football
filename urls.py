@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^lobbyexit/$', 'allstars.views.lobbyexit'),
     #ajax view for exiting the lobby
 
-    url(r'^play_game/$', 'allstars.views.play_game'),
+    url(r'^play_game/(?P<team1>[\S\w ]+)/$', 'allstars.views.play_game'),
     #play the game todo make accept two teams
 
     url(r'^create/$', 'allstars.views.create'),

@@ -73,7 +73,6 @@
 					csrfmiddlewaretoken: '{{ csrf_token }}'
 				},
 				success : function(players) {
-					alert('x');
 					$('#players_table').html(" ");
 
 					$('#players_table').append("<tr><th>Name</th><th>Position</th><th>Passing Rating</th><th>Rushing Rating</th><th>Receiving Rating</th></tr>");

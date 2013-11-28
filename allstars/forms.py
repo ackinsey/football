@@ -9,6 +9,15 @@ class RosterForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
+
+    def __init__(self, luser, *args, **kwargs):
+    	super(RosterForm, self).__init__(*args, **kwargs)
+    	self.fields['players'] = forms.ModelMultipleChoiceField(
+        queryset=Player.objects.filter(team=Team.objects.get(user=luser)),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
     def clean_players(self):
 		active_roster=[]
 		num_qb=0

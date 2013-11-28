@@ -16,7 +16,7 @@
 
 <div id="games">
 	{% for host in hosts %}
-		{{host.team_name}}
+		<a href="/play_game">{{host.team_name}}</a>
 	{% endfor %}
 </div>
 
@@ -40,7 +40,7 @@ function hostGame(){
 			$('#games').html(" ");
 			var hosts = data[1];
 			for(var i=0;i<hosts.length;i++)
-					$('#games').append(hosts[i].fields.team_name + " ");
+					$('#games').append("<a href='/play_game/" + hosts[i].fields.team_name + "'>" + hosts[i].fields.team_name + "</a>");
 		}
 	});
 }
@@ -62,11 +62,11 @@ function updateLobby(){
 			$('#games').html(" ");
 			var hosts = data[1];
 			for(var i=0;i<hosts.length;i++)
-					$('#games').append(hosts[i].fields.team_name + " ");
+				$('#games').append("<a href='/play_game/" + hosts[i].fields.team_name + "'>" + hosts[i].fields.team_name + "</a>");
 		}
 	});
 
-    setTimeout(updateLobby, 5000);
+    setTimeout(updateLobby, 3000);
 }
 
 updateLobby();

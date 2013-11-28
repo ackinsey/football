@@ -29,6 +29,7 @@ class Game(models.Model):
     team_1 = models.ForeignKey(Team, related_name="team_1")
     team_2 = models.ForeignKey(Team, related_name="team_2")
     week = models.IntegerField()
+    winner = models.ForeignKey(Team, related_name="winner", null=True)
     #Game's results are randomly generated, but they do make use of player ratings which means
     #teams with higher skilled players are more likely to win.
 
@@ -36,7 +37,8 @@ class Game(models.Model):
         return u'%s vs %s ' %(self.team_1, self.team_2)
 
     def generate_result(self):
-        for player in Player.objects.filter(Q(team=self.team_1) | Q(team=self.team_2)).filter(is_active=True):
+        for player in Player.objects.filter(Q(team=self.team_1) | Q(team=self.team_2)):
+            print player
             stat=Statistic(player=player,game=self,week=self.week)
             rush_rating=((int(player.rushing_ability)+random.randint(1,50))/1.5) if int(player.rushing_ability) > 0 else 0
             pass_rating=((int(player.passing_ability)+random.randint(1,50))/1.5) if int(player.passing_ability) > 0 else 0

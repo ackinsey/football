@@ -74,17 +74,14 @@ def filter_players(request):
 
 @csrf_protect
 def set_roster(request):
-	p = Player.objects.filter(team=Team.objects.filter(team_name=request.user)[0])
 	form = None
-	#for pi in p:
-	#	pi.is_active=False
-	#	pi.save()
+
 	if request.method == 'POST':
 		form = RosterForm(request.POST)
 		if form.is_valid():
 			return HttpResponseRedirect('/')
 	else:
-		form = RosterForm()
+		form = RosterForm(request.user)
 	return render_to_response('forms/set_roster.html', {
         'form': form,
     },RequestContext(request))
@@ -101,23 +98,19 @@ def draft(request):
 	p = Player.objects.filter(team__isnull=True)
 	drafted_p = Player.objects.filter(team=Team.objects.filter(user=request.user))
 	return render(request, 'allstars/draft.html', {
-		'draft_dict':draft_dict,
 		'players':p,
 		'drafted_players':drafted_p,
-		'usr':request.user,
-		'home':True
 	})
 
 def draft_player(request):
 	if 'selection' in request.POST:
 		if Team.objects.filter(league=League.objects.all()[0])[League.objects.all()[0].draft_index]==Team.objects.get(user=request.user) and Player.objects.get(name=request.POST['selection']).team==None:
-			print "draft"
 			selected_player=Player.objects.get(name=request.POST['selection'])
 			selected_player.team=Team.objects.get(user=request.user)
 			selected_player.save()
-			draft_log.append("The "+selected_player.team.team_name+" draft "+selected_player.name)
+			#draft_log.append("The "+selected_player.team.team_name+" draft "+selected_player.name) maybe later
 
-			undrafted=serializers.serialize('python', Player.objects.filter(team=None))
+			undrafted=serializers.serialize('python', Player.objects.filter(team__isnull=True))
 			team=serializers.serialize('python', Player.objects.filter(team=selected_player.team))
 
 			json = simplejson.dumps([undrafted,team])
@@ -128,10 +121,6 @@ def draft_player(request):
 			return HttpResponse(json, mimetype='text/json')
 		return HttpResponse()
 	elif not 'selection' in request.POST:
-		#print "update"
-		#response = HttpResponse(content_type="application/json")
-		#serializers.serialize("json", [Team.objects.filter(league=League.objects.all()[0])[League.objects.all()[0].draft_index]], stream=response)
-		#return response
 		undrafted=serializers.serialize('python', Player.objects.filter(team=None))
 		team=serializers.serialize('python', Player.objects.filter(team=Team.objects.get(user=request.user)))
 		current=serializers.serialize('python', [Team.objects.filter(league=League.objects.all()[0])[League.objects.all()[0].draft_index]])
@@ -152,7 +141,6 @@ def create(request):
 			team.email_address=usr.email
 			team.user=usr;
 			team.save()
-			#team=Team.objects.create_user(team_name=form.team_name, email_address=form.email_address, password=form.password)
 			return HttpResponseRedirect('/')
 	else:
 		form = RegisterForm()
@@ -161,22 +149,6 @@ def create(request):
     },RequestContext(request))
 
 def validate_user(request):
-		#'team_error':'There is already a team with that name',
-		#'team_confirm':'that team name is available',
-		#'password_error':'no errors',
-		#'password_confirm':'the passwords are the same',
-	#response=HttpResponse()
-
-	#	undrafted=serializers.serialize('python', Player.objects.filter(team=None))
-	#	team=serializers.serialize('python', Player.objects.filter(team=Team.objects.get(user=request.user)))
-	#	current=serializers.serialize('python', [Team.objects.filter(league=League.objects.all()[0])[League.objects.all()[0].draft_index]])
-	#	json = simplejson.dumps([undrafted,team,current,draft_log])
-
-	#response = HttpResponse(content_type="application/json")
-	#serializers.serialize("json", '')
-	#current=serializers.serialize('json', 'aa'))
-	#json = simplejson.dumps([current,current])
-	#return HttpResponse(json, mimetype='text/json')`
 	if 'username' in request.POST:
 		user_confirm=''
 		user_error=''
@@ -221,11 +193,20 @@ def validate_user(request):
 		}))
 
 
-def play_game(request, team_name1, team_name2):
-	g = Game.objects.get(week=League.objects.get().week)
+def play_game(request, team1):
+	t1 = Team.objects.get(team_name=team1)
+	t2 = Team.objects.get(user=request.user)
+
+	g = Game(team_1=t1, team_2=t2, week=0)
+	g.save()
 	g.generate_result()
+	
+	
+	#s = Statistic.objects.all()
+
 	return render(request, 'allstars/play_game.html', {
 		'game': g,
+		#'stats': s,
 	})
 
 @login_required

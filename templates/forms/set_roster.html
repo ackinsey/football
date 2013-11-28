@@ -1,100 +1,59 @@
 {% include "header.html" %}
 
-<html>
-	Set Roster
-	<!--<form method="post">
-		<table colwidth="2">
-		{% for player in players %}
-		<tr class="player_data">
-			<td>
-			<input id="{{ player.name }}" class="check" type="checkbox">
-			</td>
-			<td>
-			{{player.get_absolute_url}}
-			<a href="">{{ player.name }}</a>
-			</td>
-			<td>
-			{{ player.college }}
-			</td>
-			<td>
-			{{ player.date_of_birth }}
-			</td>
-			<td class="position">
-			{{ player.position }}
-			</td>
-			<td>
-			{{ player.passing_ability }}
-			</td>
-			<td>
-			{{ player.rushing_ability }}
-			</td>
-			<td>
-			{{ player.receiving_ability }}
-			</td>
-		</tr>
-		{% endfor %}
-		</table>
-		<br/>
-		<input id="submit_button" type="submit">
-		<br/>
-		<br/>
-		<div id="error_text"></div>
-	</form>-->
-	<form method="post">
-		{% csrf_token %}
-		{% for field in form %}
-			{{field.errors}}
-			{{field}}
-		{% endfor %}
-		<input type="submit" value="Submit" />
-	</form>
-	<script>
-		$("#submit_button").on('click',function(){
-			return true;
-			if($('input:checkbox:checked').length!=7)
-			{
-				$('#error_text').text("You must select exactly 7 players for this weeks game.");
-				return false;
-			}
-			var num_qb=0,num_rb=0,num_wr=0,num_te=0;
-			$("tr.player_data").each(function() {
-			  $this = $(this);
-			  if($this.find('input:checkbox:checked').val()=="on"){
-			  	if($this.find('.position').text().trim()=="QB")
-			  		num_qb++;
-			  	else if($this.find('.position').text().trim()=="RB")
-			  		num_rb++;
-			  	else if($this.find('.position').text().trim()=="WR")
-			  		num_wr++;
-			  	else if($this.find('.position').text().trim()=="TE")
-			  		num_te++;
-			  	
-			  }
-			  if(num_qb==0)
-			  {
-			  	$('#error_text').text('You need to have a QB on your active roster.');
-			  	return false;
-			  }
-			  if(num_rb==0)
-			  {
-			  	$('#error_text').text('You need to have at least one RB on your active roster.');
-			  	return false;
-			  }
-			  if(num_wr < 3)
-			  {
-			  	$('#error_text').text('You need to have at least three WR\'s on your active roster.');
-			  	return false;
-			  }
-			  if(num_te == 0)
-			  {
-			  	$('#error_text').text('You need to have at least one TE on your active roster.');
-			  	return false;
-			  }
-			//  var value = $this.find("span.value").html();
-			//  var quantity = $this.find("input.quantity").val();
-			});
-			console.log("qb "+num_qb);
+Set Roster
+<form method="post">
+	{% csrf_token %}
+	{% for field in form %}
+		{{field.errors}}
+		{{field}}
+	{% endfor %}
+	<input type="submit" value="Submit" />
+</form>
+<script>
+	$("#submit_button").on('click',function(){
+		return true;
+		if($('input:checkbox:checked').length!=7)
+		{
+			$('#error_text').text("You must select exactly 7 players for this weeks game.");
 			return false;
+		}
+		var num_qb=0,num_rb=0,num_wr=0,num_te=0;
+		$("tr.player_data").each(function() {
+		  $this = $(this);
+		  if($this.find('input:checkbox:checked').val()=="on"){
+		  	if($this.find('.position').text().trim()=="QB")
+		  		num_qb++;
+		  	else if($this.find('.position').text().trim()=="RB")
+		  		num_rb++;
+		  	else if($this.find('.position').text().trim()=="WR")
+		  		num_wr++;
+		  	else if($this.find('.position').text().trim()=="TE")
+		  		num_te++;
+		  	
+		  }
+		  if(num_qb==0)
+		  {
+		  	$('#error_text').text('You need to have a QB on your active roster.');
+		  	return false;
+		  }
+		  if(num_rb==0)
+		  {
+		  	$('#error_text').text('You need to have at least one RB on your active roster.');
+		  	return false;
+		  }
+		  if(num_wr < 3)
+		  {
+		  	$('#error_text').text('You need to have at least three WR\'s on your active roster.');
+		  	return false;
+		  }
+		  if(num_te == 0)
+		  {
+		  	$('#error_text').text('You need to have at least one TE on your active roster.');
+		  	return false;
+		  }
+		//  var value = $this.find("span.value").html();
+		//  var quantity = $this.find("input.quantity").val();
 		});
-	</script>
-</html>
+		return false;
+	});
+</script>

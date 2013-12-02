@@ -14,13 +14,13 @@
 	</tr>
 {% for stat in statistics %}
 	<tr>
-	<td>{{ stat.week }}</td>
-	<td>{{ stat.passing_yards }}</td>
-	<td>{{ stat.passing_touchdowns }}</td>
-	<td>{{ stat.rushing_yards }}</td>
-	<td>{{ stat.rushing_touchdowns }}</td>
-	<td>{{ stat.receiving_yards }}</td>
-	<td>{{ stat.receiving_touchdowns }}</td>
+	<td class="oddCol">{{ stat.week }}</td>
+	<td class="evenCol">{{ stat.passing_yards }}</td>
+	<td class="oddCol">{{ stat.passing_touchdowns }}</td>
+	<td class="evenCol">{{ stat.rushing_yards }}</td>
+	<td class="oddCol">{{ stat.rushing_touchdowns }}</td>
+	<td class="evenCol">{{ stat.receiving_yards }}</td>
+	<td class="oddCol">{{ stat.receiving_touchdowns }}</td>
 	</tr>
 {% endfor %}
 	<tr>

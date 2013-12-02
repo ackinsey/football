@@ -1,0 +1,56 @@
+body.footballBody
+{
+	background-color: #6699CC;
+}
+
+div.bodyDiv
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 80%;
+	background-color: white;
+	padding: 10px;
+}
+
+table.fTable
+{
+	margin: 20px;
+	border-collapse: collapse;
+	border: 2px solid #003399;
+}
+
+td.oddCol
+{
+	border-top: 2px solid #003399;
+	border-bottom: 2px solid #003399;
+	text-align: center;
+	padding: 14px;
+	background-color: #E0E0E0;
+	transition: background-color 0.25s;
+	-webkit-transition: background-color 0.25s;
+}
+
+td.evenCol
+{
+	border-top: 2px solid #003399;
+	border-bottom: 2px solid #003399;
+	text-align: center;
+	padding: 14px;
+	background-color: #FFFF66;
+	transition: background-color 0.25s;
+	-webkit-transition: background-color 0.25s;
+}
+
+th.footballTh
+{
+	color: #000066;
+	border-top: 2px solid #003399;
+	border-botton: 2px solid #003399;
+	padding: 14px;
+
+}
+
+td:Hover
+{
+background-color: white;
+}

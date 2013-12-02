@@ -1,5 +1,6 @@
 {% include "header.html" %}
-
+<body class="footballBody">
+<div class="bodyDiv">
 <div id="teams">
 	{% for team in teams %}
 		{{team.team_name}}
@@ -78,3 +79,5 @@ jQuery(window).bind('beforeunload', function(){
 	});
 });
 </script>
+</div>
+</body>

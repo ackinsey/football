@@ -1,8 +1,9 @@
 {% include "header.html" %}
-
+<body class="footballBody">
+<div class="bodyDiv">
 <div>{{player.name}}</div>
 <div><a href="/team/{{player.team.team_name}}">{{player.team}}</a></div>
-<table border="1">
+<table class="fTable">
 	<tr>
 		<th class="footballTh">Week</th>
 		<th class="footballTh">Passing Yards</th>
@@ -31,3 +32,5 @@
 	{% endfor %}
 	</tr>
 </table>
+</div>
+</body>

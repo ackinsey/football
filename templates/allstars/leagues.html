@@ -1,5 +1,6 @@
 {% include "header.html" %}
-
+<body class="footballBody">
+<div class="bodyDiv">
 {% for league in leagues %}
 	{{league.name}}
 	<table border="1" id="players_table">
@@ -12,3 +13,5 @@
 	{% endfor %}
 	</table>
 {% endfor %}
+</div>
+</body>

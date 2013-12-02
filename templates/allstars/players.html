@@ -1,5 +1,6 @@
 {% include "header.html" %}
-
+<body class="footballBody">
+<div class="bodyDiv">
 <div id="form_container">
 	<form method='post' id ='test'>
 		{% csrf_token %}
@@ -14,7 +15,7 @@
 	</form>
 </div>
 	Players
-<table id="players_table">
+<table class="fTable" id="players_table">
 <tr>
 	<th class="footballTh">
 		Name
@@ -89,3 +90,5 @@
 
     });
 </script>
+</div>
+</body>

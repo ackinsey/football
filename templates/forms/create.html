@@ -1,4 +1,6 @@
 {% include "header.html" %}
+<body class="footballBody">
+<div class="bodyDiv">
 <form method="post">
 	{% csrf_token %}
 	{% for field in form %}
@@ -75,3 +77,5 @@ $(document).ready(function() {
 	});
 });
 </script>
+</div>
+</body>

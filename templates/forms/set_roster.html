@@ -1,6 +1,7 @@
 {% include "header.html" %}
-
-Set Roster
+<body class="footballBody">
+<div class="bodyDiv">
+<h2>Set Roster</h2>
 <form method="post">
 	{% csrf_token %}
 	{% for field in form %}
@@ -57,3 +58,5 @@ Set Roster
 		return false;
 	});
 </script>
+</div>
+</body>
